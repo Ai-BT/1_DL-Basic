@@ -9,6 +9,8 @@ def softmax(x):
         return y.T 
 
     x = x - np.max(x) # 오버플로 대책
+    
+    # print('softmax 결과값 = ', np.exp(x) / np.sum(np.exp(x)))
     return np.exp(x) / np.sum(np.exp(x))
 
 
@@ -22,6 +24,44 @@ def CEE(y, t):
         t = t.argmax(axis=1)
              
     batch_size = y.shape[0]
+
+    # print('CEE 결과값 = ', -np.sum(np.log(y[np.arange(batch_size), t])) / batch_size)
     return -np.sum(np.log(y[np.arange(batch_size), t])) / batch_size
 
+
+def identity_function(x):
+    return x
+
+def step_function(x):
+    return np.array(x > 0, dtype=np.int)
+
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))    
+
+
+def sigmoid_grad(x):
+    return (1.0 - sigmoid(x)) * sigmoid(x)
+    
+
+def relu(x):
+    return np.maximum(0, x)
+
+
+def relu_grad(x):
+    grad = np.zeros(x)
+    grad[x>=0] = 1
+    return grad
+    
+
+
+def mean_squared_error(y, t):
+    return 0.5 * np.sum((y-t)**2)
+
+
+
+
+def softmax_loss(X, t):
+    y = softmax(X)
+    return CEE(y, t)
 
