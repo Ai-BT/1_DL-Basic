@@ -10,32 +10,32 @@ XOR <br/>
 
 -------------
 ### Ch.03
-Numpy 활용
-Activation_function
-3층 신경망
-Mnist 활용
+Numpy 활용 <br/>
+Activation_function <br/>
+3층 신경망 <br/>
+Mnist 활용 <br/>
 
 -------------
 ### Ch.04
-Mean Squared Error
-Cross Entropy Error
-Gradient_desent
-Mnist Training
+Mean Squared Error <br/>
+Cross Entropy Error <br/>
+Gradient_desent <br/>
+Mnist Training <br/>
 
 -------------
 ### Ch.05
-Backpropagation
+Backpropagation <br/>
 
 -------------
 ### Ch.06
-확률적 경사 하강법（Stochastic Gradient Descent
-모멘텀 SGD
-AdaGrad
-Adam
+확률적 경사 하강법 (Stochastic Gradient Descent) <br/>
+모멘텀 SGD <br/>
+AdaGrad <br/>
+Adam <br/>
 
 -------------
 ### Ch.07
-CNN
+CNN <br/>
 
 -------------
 
