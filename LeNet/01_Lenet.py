@@ -25,6 +25,13 @@ train_data = datasets.MNIST(path_data, train=True, download=True, transform=data
 # MNIST test dataset 불러오기
 val_data = datasets.MNIST(path_data, train=False, download=True, transform=data_transform)
 
+# cuda 사용 가능 확인
+if torch.cuda.is_available():
+    device = torch.device('cuda:0')
+else:
+    device = torch.device('cpu')
+print(device)
+
 
 
 # %%
@@ -57,6 +64,7 @@ x_grid = utils.make_grid(x_train[:40], nrow=8, padding=2)
 
 show(x_grid)
 
+# %%
 # data loader 를 생성합니다.
 from torch.utils.data import DataLoader
 
@@ -78,20 +86,34 @@ class LeNet_5(nn.Module):
         self.fc2 = nn.Linear(84, 10)
 
     def forward(self, x):
+        print('x_0 = ',x.shape)
         x = F.tanh(self.conv1(x))
+        print('x_1 = ',x.shape)
         x = F.avg_pool2d(x, 2, 2)
+        print('x_2 = ',x.shape)
         x = F.tanh(self.conv2(x))
+        print('x_3 = ',x.shape)
         x = F.avg_pool2d(x, 2, 2)
+        print('x_4 = ',x.shape)
         x = F.tanh(self.conv3(x))
+        print('x_5 = ',x.shape)
         x = x.view(-1, 120)
+        print('x_6 = ',x.shape)
         x = F.tanh(self.fc1(x))
+        print('x_7 = ',x.shape)
         x = self.fc2(x)
+        print('x_8 = ',x.shape)
         return F.softmax(x, dim=1)
 
 model = LeNet_5()
 print(model)
 # %%
 
+# 모델을 cuda로 전달
+model.to(device)
+print(next(model.parameters()).device)
+
+# %%
 # 파라미터
 # 파라미터는 모델 내부에서 결정되는 변수
 
@@ -101,8 +123,6 @@ print(model)
 
 # 모델 summary를 확인
 from torchsummary import summary
-
-model = model.cuda()
 summary(model, input_size=(1, 32, 32))
 
 # %%
@@ -124,6 +144,7 @@ def get_lr(opt):
 from torch.optim.lr_scheduler import CosineAnnealingLR
 lr_scheduler = CosineAnnealingLR(opt, T_max=2, eta_min=1e-05)
 
+
 # %%
 # 배치당 performance metric 을 계산하는 함수 정의
 def metrics_batch(output, target):
@@ -131,7 +152,9 @@ def metrics_batch(output, target):
     corrects = pred.eq(target.view_as(pred)).sum().item()
     return corrects
 
+
 # %%
+# 배치당 loss를 계산하는 함수를 정의
 def loss_batch(loss_func, output, target, opt=None):
     loss = loss_func(output, target)
     metric_b = metrics_batch(output, target)
@@ -149,8 +172,8 @@ def loss_epoch(model, loss_func, dataset_dl, sanity_check=False, opt=None):
     len_data = len(dataset_dl.dataset)
 
     for xb, yb in dataset_dl:
-        xb = xb.type(torch.float)
-        yb = yb
+        xb = xb.type(torch.float).to(device)
+        yb = yb.to(device)
         output = model(xb)
         loss_b, metric_b = loss_batch(loss_func, output, yb, opt)
         running_loss += loss_b
@@ -246,7 +269,7 @@ params_train={
 model, loss_hist, metric_hist = train_val(model,params_train)
 
 # %%
-
+# plot loss progress
 num_epochs = params_train["num_epochs"]
 
 plt.title("Train-Val Loss")
@@ -256,3 +279,14 @@ plt.ylabel("Loss")
 plt.xlabel("Training Epochs")
 plt.legend()
 plt.show()
+# %%
+
+# plot accuracy progress
+plt.title("Train-Val Accuracy")
+plt.plot(range(1,num_epochs+1),metric_hist["train"],label="train")
+plt.plot(range(1,num_epochs+1),metric_hist["val"],label="val")
+plt.ylabel("Accuracy")
+plt.xlabel("Training Epochs")
+plt.legend()
+plt.show()
+# %%
