@@ -36,7 +36,10 @@ Adam <br/>
 -------------
 ### Ch.07
 CNN <br/>
-
+- Data
+- Modle
+- Training
+- Result
 -------------
 
 
